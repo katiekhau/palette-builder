@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8 Color Palette Builder</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f4f1ec;
+      --fg: #24211d;
+      --muted: #686059;
+      --panel: #fffdfa;
+      --panel-2: #ece8df;
+      --border: #d7d0c6;
+      --accent: #2f6f73;
+      --accent-2: #b94f35;
+      --accent-fg: #ffffff;
+      --shadow: 0 18px 55px rgba(36, 33, 29, 0.12);
+      --radius: 8px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #171614;
+        --fg: #f4efe7;
+        --muted: #c0b7ab;
+        --panel: #22201d;
+        --panel-2: #2d2a26;
+        --border: #464039;
+        --accent: #73b8b4;
+        --accent-2: #dc846d;
+        --accent-fg: #102021;
+        --shadow: 0 20px 60px rgba(0, 0, 0, 0.34);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, rgba(47, 111, 115, 0.16), transparent 34%),
+        linear-gradient(315deg, rgba(185, 79, 53, 0.14), transparent 36%),
+        var(--bg);
+      color: var(--fg);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--fg);
+      padding: 0 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      border-color: color-mix(in srgb, var(--accent), var(--border) 35%);
+    }
+
+    button.primary {
+      border-color: transparent;
+      background: var(--accent);
+      color: var(--accent-fg);
+    }
+
+    button.subtle {
+      background: transparent;
+    }
+
+    input[type="text"] {
+      min-height: 38px;
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--fg);
+      padding: 0 10px;
+      text-transform: uppercase;
+    }
+
+    input[type="color"] {
+      width: 44px;
+      height: 38px;
+      padding: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--panel);
+      cursor: pointer;
+    }
+
+    input[type="file"] {
+      max-width: 100%;
+    }
+
+    .app {
+      width: min(1160px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.55rem, 2vw, 2rem);
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .lede {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .palette-panel,
+    .image-panel {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: color-mix(in srgb, var(--panel), transparent 4%);
+      box-shadow: var(--shadow);
+    }
+
+    .palette-panel {
+      overflow: hidden;
+    }
+
+    .swatch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .swatch {
+      min-height: 248px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      border-right: 1px solid rgba(0, 0, 0, 0.16);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+      color: var(--label-color, #111);
+    }
+
+    .swatch:nth-child(4n) {
+      border-right: 0;
+    }
+
+    .color-field {
+      align-self: end;
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 8px;
+      padding: 12px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
+    }
+
+    .color-field label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+
+    .color-field input[type="text"] {
+      background: color-mix(in srgb, var(--panel), transparent 9%);
+    }
+
+    .image-panel {
+      padding: 16px;
+    }
+
+    .panel-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 650;
+      letter-spacing: 0;
+    }
+
+    .upload-box {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--panel-2);
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .url-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .url-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .url-field label {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .preview {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(45deg, color-mix(in srgb, var(--border), transparent 50%) 25%, transparent 25%),
+        linear-gradient(-45deg, color-mix(in srgb, var(--border), transparent 50%) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, color-mix(in srgb, var(--border), transparent 50%) 75%),
+        linear-gradient(-45deg, transparent 75%, color-mix(in srgb, var(--border), transparent 50%) 75%);
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      background-size: 16px 16px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .mini {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 14px;
+    }
+
+    .mini span {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.22);
+    }
+
+    .format {
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .format code {
+      color: var(--fg);
+    }
+
+    canvas {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .app {
+        width: min(100% - 20px, 1160px);
+        padding: 16px 0;
+      }
+
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .actions {
+        justify-content: flex-start;
+      }
+
+      .actions button {
+        flex: 1 1 150px;
+      }
+
+      .url-row {
+        grid-template-columns: 1fr;
+      }
+
+      .swatch-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .swatch {
+        min-height: 190px;
+      }
+
+      .swatch:nth-child(2n) {
+        border-right: 0;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .swatch-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .swatch {
+        border-right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>8 Color Palette Builder</h1>
+        <p class="lede">Create, edit, extract from an image, and export one hex color per line.</p>
+      </div>
+      <div class="actions">
+        <button type="button" id="randomize">Random palette</button>
+        <button type="button" id="copy">Copy hex</button>
+        <button type="button" class="primary" id="export">Export .hex</button>
+      </div>
+    </header>
+
+    <section class="workspace" aria-label="Palette builder">
+      <div class="palette-panel">
+        <div class="swatch-grid" id="swatches"></div>
+      </div>
+
+      <aside class="image-panel">
+        <div class="panel-heading">
+          <h2>Image palette</h2>
+          <button type="button" class="subtle" id="clearImage">Clear</button>
+        </div>
+        <div class="upload-box">
+          <input id="imageInput" type="file" accept="image/*" aria-label="Upload image to extract palette">
+          <div class="url-row">
+            <div class="url-field">
+              <label for="imageUrl">Or use an image link</label>
+              <input id="imageUrl" type="url" placeholder="https://example.com/image.jpg" autocomplete="off">
+            </div>
+            <button type="button" id="loadUrl">Use link</button>
+          </div>
+          <div class="preview" id="preview">
+            <span>Upload an image to fill the eight swatches.</span>
+          </div>
+        </div>
+        <div class="status" id="status" role="status" aria-live="polite"></div>
+        <div class="mini" id="miniPalette" aria-label="Current palette preview"></div>
+        <p class="format">Export format: <code>#RRGGBB</code> on eight separate lines.</p>
+      </aside>
+    </section>
+  </main>
+
+  <canvas id="sampler" width="160" height="160"></canvas>
+
+  <script>
+    const DEFAULT_COLORS = ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#6D597A", "#B56576", "#355070"];
+    const swatches = document.getElementById("swatches");
+    const miniPalette = document.getElementById("miniPalette");
+    const status = document.getElementById("status");
+    const imageInput = document.getElementById("imageInput");
+    const imageUrl = document.getElementById("imageUrl");
+    const preview = document.getElementById("preview");
+    const canvas = document.getElementById("sampler");
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    let colors = [...DEFAULT_COLORS];
+
+    function normalizeHex(value) {
+      const raw = value.trim().replace(/^#/, "");
+      if (/^[0-9a-f]{3}$/i.test(raw)) {
+        return "#" + raw.split("").map((char) => char + char).join("").toUpperCase();
+      }
+      if (/^[0-9a-f]{6}$/i.test(raw)) {
+        return "#" + raw.toUpperCase();
+      }
+      return null;
+    }
+
+    function hexToRgb(hex) {
+      const clean = hex.replace("#", "");
+      return [
+        parseInt(clean.slice(0, 2), 16),
+        parseInt(clean.slice(2, 4), 16),
+        parseInt(clean.slice(4, 6), 16)
+      ];
+    }
+
+    function rgbToHex(rgb) {
+      return "#" + rgb.map((channel) => {
+        const clamped = Math.max(0, Math.min(255, Math.round(channel)));
+        return clamped.toString(16).padStart(2, "0");
+      }).join("").toUpperCase();
+    }
+
+    function readableLabelColor(hex) {
+      const [r, g, b] = hexToRgb(hex).map((value) => {
+        const normalized = value / 255;
+        return normalized <= 0.03928 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
+      });
+      const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      return luminance > 0.52 ? "#111111" : "#FFFFFF";
+    }
+
+    function render() {
+      swatches.innerHTML = "";
+      colors.forEach((hex, index) => {
+        const tile = document.createElement("article");
+        tile.className = "swatch";
+        tile.style.background = hex;
+        tile.style.setProperty("--label-color", readableLabelColor(hex));
+        tile.setAttribute("aria-label", `Color ${index + 1}: ${hex}`);
+
+        const controls = document.createElement("div");
+        controls.className = "color-field";
+
+        const colorLabel = document.createElement("label");
+        colorLabel.htmlFor = `picker-${index}`;
+        colorLabel.textContent = `Pick color ${index + 1}`;
+
+        const picker = document.createElement("input");
+        picker.id = `picker-${index}`;
+        picker.type = "color";
+        picker.value = hex;
+        picker.addEventListener("input", () => updateColor(index, picker.value));
+
+        const textLabel = document.createElement("label");
+        textLabel.htmlFor = `hex-${index}`;
+        textLabel.textContent = `Hex value ${index + 1}`;
+
+        const text = document.createElement("input");
+        text.id = `hex-${index}`;
+        text.type = "text";
+        text.inputMode = "text";
+        text.spellcheck = false;
+        text.value = hex;
+        text.maxLength = 7;
+        text.addEventListener("change", () => {
+          const normalized = normalizeHex(text.value);
+          if (normalized) {
+            updateColor(index, normalized);
+            setStatus(`Updated color ${index + 1}.`);
+          } else {
+            text.value = colors[index];
+            setStatus("Use hex values like #2A9D8F or #ABC.");
+          }
+        });
+
+        controls.append(colorLabel, picker, textLabel, text);
+        tile.append(controls);
+        swatches.append(tile);
+      });
+
+      miniPalette.innerHTML = "";
+      colors.forEach((hex) => {
+        const dot = document.createElement("span");
+        dot.style.background = hex;
+        dot.setAttribute("title", hex);
+        miniPalette.append(dot);
+      });
+    }
+
+    function updateColor(index, value) {
+      const normalized = normalizeHex(value);
+      if (!normalized) return;
+      colors[index] = normalized;
+      render();
+    }
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function paletteText() {
+      return colors.join("\n") + "\n";
+    }
+
+    function seededRandomColor(seed) {
+      const hue = (seed * 47 + Math.random() * 38) % 360;
+      const sat = 42 + Math.random() * 38;
+      const light = 34 + Math.random() * 34;
+      return hslToHex(hue, sat, light);
+    }
+
+    function hslToHex(h, s, l) {
+      s /= 100;
+      l /= 100;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let rgb = [0, 0, 0];
+      if (h < 60) rgb = [c, x, 0];
+      else if (h < 120) rgb = [x, c, 0];
+      else if (h < 180) rgb = [0, c, x];
+      else if (h < 240) rgb = [0, x, c];
+      else if (h < 300) rgb = [x, 0, c];
+      else rgb = [c, 0, x];
+      return rgbToHex(rgb.map((value) => (value + m) * 255));
+    }
+
+    function distanceSquared(a, b) {
+      const dr = a[0] - b[0];
+      const dg = a[1] - b[1];
+      const db = a[2] - b[2];
+      return dr * dr + dg * dg + db * db;
+    }
+
+    function colorWeight(rgb) {
+      const max = Math.max(...rgb);
+      const min = Math.min(...rgb);
+      const saturation = max === 0 ? 0 : (max - min) / max;
+      const brightness = max / 255;
+      return 0.65 + saturation * 0.9 + Math.min(brightness, 0.86) * 0.25;
+    }
+
+    function extractPalette(image) {
+      const maxSide = 190;
+      const ratio = Math.min(maxSide / image.naturalWidth, maxSide / image.naturalHeight, 1);
+      const width = Math.max(1, Math.round(image.naturalWidth * ratio));
+      const height = Math.max(1, Math.round(image.naturalHeight * ratio));
+      canvas.width = width;
+      canvas.height = height;
+      ctx.clearRect(0, 0, width, height);
+      try {
+        ctx.drawImage(image, 0, 0, width, height);
+      } catch {
+        throw new Error("The browser could not draw that image for sampling.");
+      }
+
+      let data;
+      try {
+        data = ctx.getImageData(0, 0, width, height).data;
+      } catch {
+        throw new Error("That image link blocks palette extraction. Try downloading it and using Upload instead.");
+      }
+      const pixels = [];
+      const stride = Math.max(1, Math.floor((width * height) / 14000));
+      for (let i = 0; i < data.length; i += 4 * stride) {
+        if (data[i + 3] < 160) continue;
+        const rgb = [data[i], data[i + 1], data[i + 2]];
+        const max = Math.max(...rgb);
+        const min = Math.min(...rgb);
+        if (max < 10 && min < 10) continue;
+        pixels.push(rgb);
+      }
+
+      if (pixels.length < 8) {
+        throw new Error("That image did not have enough visible pixels to sample.");
+      }
+
+      const centers = [pixels[Math.floor(Math.random() * pixels.length)]];
+      while (centers.length < 8) {
+        let bestPixel = pixels[0];
+        let bestScore = -1;
+        for (const pixel of pixels) {
+          const nearest = Math.min(...centers.map((center) => distanceSquared(pixel, center)));
+          const score = nearest * colorWeight(pixel);
+          if (score > bestScore) {
+            bestScore = score;
+            bestPixel = pixel;
+          }
+        }
+        centers.push([...bestPixel]);
+      }
+
+      for (let round = 0; round < 14; round += 1) {
+        const groups = centers.map(() => ({ total: [0, 0, 0], weight: 0, count: 0 }));
+        for (const pixel of pixels) {
+          let bestIndex = 0;
+          let bestDistance = Infinity;
+          centers.forEach((center, index) => {
+            const distance = distanceSquared(pixel, center);
+            if (distance < bestDistance) {
+              bestDistance = distance;
+              bestIndex = index;
+            }
+          });
+          const weight = colorWeight(pixel);
+          groups[bestIndex].total[0] += pixel[0] * weight;
+          groups[bestIndex].total[1] += pixel[1] * weight;
+          groups[bestIndex].total[2] += pixel[2] * weight;
+          groups[bestIndex].weight += weight;
+          groups[bestIndex].count += 1;
+        }
+        groups.forEach((group, index) => {
+          if (group.weight > 0) {
+            centers[index] = group.total.map((value) => value / group.weight);
+          }
+        });
+      }
+
+      const unique = [];
+      centers
+        .map((rgb) => rgbToHex(rgb))
+        .forEach((hex) => {
+          if (!unique.includes(hex)) unique.push(hex);
+        });
+
+      while (unique.length < 8) {
+        unique.push(seededRandomColor(unique.length + 1));
+      }
+
+      return unique
+        .slice(0, 8)
+        .sort((a, b) => {
+          const [ar, ag, ab] = hexToRgb(a);
+          const [br, bg, bb] = hexToRgb(b);
+          return (Math.max(ar, ag, ab) + Math.min(ar, ag, ab)) - (Math.max(br, bg, bb) + Math.min(br, bg, bb));
+        });
+    }
+
+    function loadFileImage(file) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("The image could not be loaded."));
+        image.src = URL.createObjectURL(file);
+      });
+    }
+
+    function loadUrlImage(url) {
+      return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+        image.referrerPolicy = "no-referrer";
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error("The image link could not be loaded. Check the URL or try another host."));
+        image.src = url;
+      });
+    }
+
+    function showPreviewImage(image) {
+      preview.innerHTML = "";
+      preview.append(image);
+    }
+
+    document.getElementById("randomize").addEventListener("click", () => {
+      colors = Array.from({ length: 8 }, (_, index) => seededRandomColor(index + 1));
+      render();
+      setStatus("Generated a new editable palette.");
+    });
+
+    document.getElementById("copy").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(paletteText());
+        setStatus("Copied eight hex values.");
+      } catch {
+        setStatus("Clipboard access was blocked by the browser.");
+      }
+    });
+
+    document.getElementById("export").addEventListener("click", () => {
+      const blob = new Blob([paletteText()], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "palette.hex";
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      setStatus("Exported palette.hex.");
+    });
+
+    document.getElementById("clearImage").addEventListener("click", () => {
+      imageInput.value = "";
+      imageUrl.value = "";
+      preview.innerHTML = "<span>Upload an image to fill the eight swatches.</span>";
+      setStatus("");
+    });
+
+    imageInput.addEventListener("change", async () => {
+      const file = imageInput.files && imageInput.files[0];
+      if (!file) return;
+      setStatus("Reading image...");
+      try {
+        const image = await loadFileImage(file);
+        showPreviewImage(image);
+        colors = extractPalette(image);
+        render();
+        setStatus("Extracted eight colors from the image.");
+      } catch (error) {
+        setStatus(error.message || "Could not extract a palette from that image.");
+      }
+    });
+
+    async function useImageUrl() {
+      const url = imageUrl.value.trim();
+      if (!url) {
+        setStatus("Paste an image link first.");
+        return;
+      }
+
+      let parsed;
+      try {
+        parsed = new URL(url);
+      } catch {
+        setStatus("Use a full image URL that starts with http:// or https://.");
+        return;
+      }
+
+      if (!/^https?:$/.test(parsed.protocol)) {
+        setStatus("Use an http:// or https:// image link.");
+        return;
+      }
+
+      setStatus("Loading image link...");
+      try {
+        const image = await loadUrlImage(parsed.href);
+        showPreviewImage(image);
+        colors = extractPalette(image);
+        render();
+        setStatus("Extracted eight colors from the image link.");
+      } catch (error) {
+        setStatus(error.message || "Could not extract a palette from that image link.");
+      }
+    }
+
+    document.getElementById("loadUrl").addEventListener("click", useImageUrl);
+
+    imageUrl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        useImageUrl();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
