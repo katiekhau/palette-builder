@@ -79,7 +79,8 @@
       background: transparent;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    input[type="url"] {
       min-height: 38px;
       width: 100%;
       border: 1px solid var(--border);
@@ -87,6 +88,9 @@
       background: var(--panel);
       color: var(--fg);
       padding: 0 10px;
+    }
+
+    input[type="text"] {
       text-transform: uppercase;
     }
 
@@ -677,6 +681,21 @@
       });
     }
 
+    function proxiedImageUrl(url) {
+      return "https://images.weserv.nl/?url=" + encodeURIComponent(url.replace(/^https?:\/\//i, ""));
+    }
+
+    async function extractFromImageUrl(url) {
+      const directImage = await loadUrlImage(url);
+      try {
+        return { image: directImage, palette: extractPalette(directImage), usedProxy: false };
+      } catch (error) {
+        setStatus("That image host blocks direct sampling. Trying a compatibility fallback...");
+        const proxyImage = await loadUrlImage(proxiedImageUrl(url));
+        return { image: proxyImage, palette: extractPalette(proxyImage), usedProxy: true };
+      }
+    }
+
     function showPreviewImage(image) {
       preview.innerHTML = "";
       preview.append(image);
@@ -754,13 +773,14 @@
 
       setStatus("Loading image link...");
       try {
-        const image = await loadUrlImage(parsed.href);
+        const result = await extractFromImageUrl(parsed.href);
+        const image = result.image;
         showPreviewImage(image);
-        colors = extractPalette(image);
+        colors = result.palette;
         render();
-        setStatus("Extracted eight colors from the image link.");
+        setStatus(result.usedProxy ? "Extracted eight colors using the link fallback." : "Extracted eight colors from the image link.");
       } catch (error) {
-        setStatus(error.message || "Could not extract a palette from that image link.");
+        setStatus("Could not extract that image link. Try a direct image URL ending in .jpg, .png, or .webp, or use Upload.");
       }
     }
 
