@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>8 Color Palette Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light dark;
@@ -18,8 +21,9 @@
       --accent-fg: #ffffff;
       --shadow: 0 18px 55px rgba(36, 33, 29, 0.12);
       --radius: 8px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: "Poppins", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
+
 
     @media (prefers-color-scheme: dark) {
       :root {
@@ -36,9 +40,11 @@
       }
     }
 
+
     * {
       box-sizing: border-box;
     }
+
 
     body {
       margin: 0;
@@ -50,10 +56,12 @@
       color: var(--fg);
     }
 
+
     button,
     input {
       font: inherit;
     }
+
 
     button {
       min-height: 40px;
@@ -65,9 +73,11 @@
       cursor: pointer;
     }
 
+
     button:hover {
       border-color: color-mix(in srgb, var(--accent), var(--border) 35%);
     }
+
 
     button.primary {
       border-color: transparent;
@@ -75,9 +85,11 @@
       color: var(--accent-fg);
     }
 
+
     button.subtle {
       background: transparent;
     }
+
 
     input[type="text"],
     input[type="url"] {
@@ -90,9 +102,11 @@
       padding: 0 10px;
     }
 
+
     input[type="text"] {
       text-transform: uppercase;
     }
+
 
     input[type="color"] {
       width: 44px;
@@ -104,15 +118,18 @@
       cursor: pointer;
     }
 
+
     input[type="file"] {
       max-width: 100%;
     }
+
 
     .app {
       width: min(1160px, calc(100% - 32px));
       margin: 0 auto;
       padding: 28px 0;
     }
+
 
     .topbar {
       display: flex;
@@ -122,17 +139,20 @@
       margin-bottom: 20px;
     }
 
+
     h1 {
       margin: 0;
       font-size: clamp(1.55rem, 2vw, 2rem);
-      font-weight: 650;
+      font-weight: 600;
       letter-spacing: 0;
     }
+
 
     .lede {
       margin: 6px 0 0;
       color: var(--muted);
     }
+
 
     .actions {
       display: flex;
@@ -141,12 +161,14 @@
       justify-content: flex-end;
     }
 
+
     .workspace {
       display: grid;
       grid-template-columns: 1fr;
       gap: 18px;
       align-items: start;
     }
+
 
     .palette-panel,
     .image-panel {
@@ -156,14 +178,17 @@
       box-shadow: var(--shadow);
     }
 
+
     .palette-panel {
       overflow: hidden;
     }
+
 
     .swatch-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
+
 
     .swatch {
       min-height: 248px;
@@ -174,9 +199,11 @@
       color: var(--label-color, #111);
     }
 
+
     .swatch:nth-child(4n) {
       border-right: 0;
     }
+
 
     .color-field {
       align-self: end;
@@ -187,6 +214,7 @@
       background: linear-gradient(to top, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
     }
 
+
     .color-field label {
       position: absolute;
       width: 1px;
@@ -196,13 +224,16 @@
       white-space: nowrap;
     }
 
+
     .color-field input[type="text"] {
       background: color-mix(in srgb, var(--panel), transparent 9%);
     }
 
+
     .image-panel {
       padding: 16px;
     }
+
 
     .panel-heading {
       display: flex;
@@ -212,12 +243,14 @@
       margin-bottom: 12px;
     }
 
+
     h2 {
       margin: 0;
       font-size: 1rem;
-      font-weight: 650;
+      font-weight: 600;
       letter-spacing: 0;
     }
+
 
     .upload-box {
       border: 1px dashed var(--border);
@@ -228,6 +261,7 @@
       gap: 12px;
     }
 
+
     .url-row {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -235,15 +269,18 @@
       align-items: end;
     }
 
+
     .url-field {
       display: grid;
       gap: 6px;
     }
 
+
     .url-field label {
       color: var(--muted);
       font-size: 0.94rem;
     }
+
 
     .preview {
       width: 100%;
@@ -263,12 +300,14 @@
       text-align: center;
     }
 
+
     .preview img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
+
 
     .status {
       min-height: 20px;
@@ -277,6 +316,7 @@
       font-size: 0.94rem;
     }
 
+
     .mini {
       display: flex;
       flex-wrap: wrap;
@@ -284,12 +324,14 @@
       margin-top: 14px;
     }
 
+
     .mini span {
       width: 28px;
       height: 28px;
       border-radius: 50%;
       border: 1px solid rgba(0, 0, 0, 0.22);
     }
+
 
     .format {
       margin-top: 18px;
@@ -299,13 +341,16 @@
       font-size: 0.94rem;
     }
 
+
     .format code {
       color: var(--fg);
     }
 
+
     canvas {
       display: none;
     }
+
 
     @media (max-width: 900px) {
       .workspace {
@@ -313,46 +358,56 @@
       }
     }
 
+
     @media (max-width: 720px) {
       .app {
         width: min(100% - 20px, 1160px);
         padding: 16px 0;
       }
 
+
       .topbar {
         align-items: stretch;
         flex-direction: column;
       }
 
+
       .actions {
         justify-content: flex-start;
       }
+
 
       .actions button {
         flex: 1 1 150px;
       }
 
+
       .url-row {
         grid-template-columns: 1fr;
       }
+
 
       .swatch-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+
       .swatch {
         min-height: 190px;
       }
+
 
       .swatch:nth-child(2n) {
         border-right: 0;
       }
     }
 
+
     @media (max-width: 420px) {
       .swatch-grid {
         grid-template-columns: 1fr;
       }
+
 
       .swatch {
         border-right: 0;
@@ -374,10 +429,12 @@
       </div>
     </header>
 
+
     <section class="workspace" aria-label="Palette builder">
       <div class="palette-panel">
         <div class="swatch-grid" id="swatches"></div>
       </div>
+
 
       <aside class="image-panel">
         <div class="panel-heading">
@@ -404,7 +461,9 @@
     </section>
   </main>
 
+
   <canvas id="sampler" width="160" height="160"></canvas>
+
 
   <script>
     const DEFAULT_COLORS = ["#264653", "#2A9D8F", "#E9C46A", "#F4A261", "#E76F51", "#6D597A", "#B56576", "#355070"];
@@ -418,6 +477,7 @@
     const ctx = canvas.getContext("2d", { willReadFrequently: true });
     let colors = [...DEFAULT_COLORS];
 
+
     function normalizeHex(value) {
       const raw = value.trim().replace(/^#/, "");
       if (/^[0-9a-f]{3}$/i.test(raw)) {
@@ -429,6 +489,7 @@
       return null;
     }
 
+
     function hexToRgb(hex) {
       const clean = hex.replace("#", "");
       return [
@@ -438,12 +499,14 @@
       ];
     }
 
+
     function rgbToHex(rgb) {
       return "#" + rgb.map((channel) => {
         const clamped = Math.max(0, Math.min(255, Math.round(channel)));
         return clamped.toString(16).padStart(2, "0");
       }).join("").toUpperCase();
     }
+
 
     function readableLabelColor(hex) {
       const [r, g, b] = hexToRgb(hex).map((value) => {
@@ -454,6 +517,7 @@
       return luminance > 0.52 ? "#111111" : "#FFFFFF";
     }
 
+
     function render() {
       swatches.innerHTML = "";
       colors.forEach((hex, index) => {
@@ -463,12 +527,15 @@
         tile.style.setProperty("--label-color", readableLabelColor(hex));
         tile.setAttribute("aria-label", `Color ${index + 1}: ${hex}`);
 
+
         const controls = document.createElement("div");
         controls.className = "color-field";
+
 
         const colorLabel = document.createElement("label");
         colorLabel.htmlFor = `picker-${index}`;
         colorLabel.textContent = `Pick color ${index + 1}`;
+
 
         const picker = document.createElement("input");
         picker.id = `picker-${index}`;
@@ -476,9 +543,11 @@
         picker.value = hex;
         picker.addEventListener("input", () => updateColor(index, picker.value));
 
+
         const textLabel = document.createElement("label");
         textLabel.htmlFor = `hex-${index}`;
         textLabel.textContent = `Hex value ${index + 1}`;
+
 
         const text = document.createElement("input");
         text.id = `hex-${index}`;
@@ -498,10 +567,12 @@
           }
         });
 
+
         controls.append(colorLabel, picker, textLabel, text);
         tile.append(controls);
         swatches.append(tile);
       });
+
 
       miniPalette.innerHTML = "";
       colors.forEach((hex) => {
@@ -512,6 +583,7 @@
       });
     }
 
+
     function updateColor(index, value) {
       const normalized = normalizeHex(value);
       if (!normalized) return;
@@ -519,13 +591,16 @@
       render();
     }
 
+
     function setStatus(message) {
       status.textContent = message;
     }
 
+
     function paletteText() {
       return colors.join("\n") + "\n";
     }
+
 
     function seededRandomColor(seed) {
       const hue = (seed * 47 + Math.random() * 38) % 360;
@@ -533,6 +608,7 @@
       const light = 34 + Math.random() * 34;
       return hslToHex(hue, sat, light);
     }
+
 
     function hslToHex(h, s, l) {
       s /= 100;
@@ -550,12 +626,14 @@
       return rgbToHex(rgb.map((value) => (value + m) * 255));
     }
 
+
     function distanceSquared(a, b) {
       const dr = a[0] - b[0];
       const dg = a[1] - b[1];
       const db = a[2] - b[2];
       return dr * dr + dg * dg + db * db;
     }
+
 
     function colorWeight(rgb) {
       const max = Math.max(...rgb);
@@ -564,6 +642,7 @@
       const brightness = max / 255;
       return 0.65 + saturation * 0.9 + Math.min(brightness, 0.86) * 0.25;
     }
+
 
     function extractPalette(image) {
       const maxSide = 190;
@@ -578,6 +657,7 @@
       } catch {
         throw new Error("The browser could not draw that image for sampling.");
       }
+
 
       let data;
       try {
@@ -596,9 +676,11 @@
         pixels.push(rgb);
       }
 
+
       if (pixels.length < 8) {
         throw new Error("That image did not have enough visible pixels to sample.");
       }
+
 
       const centers = [pixels[Math.floor(Math.random() * pixels.length)]];
       while (centers.length < 8) {
@@ -614,6 +696,7 @@
         }
         centers.push([...bestPixel]);
       }
+
 
       for (let round = 0; round < 14; round += 1) {
         const groups = centers.map(() => ({ total: [0, 0, 0], weight: 0, count: 0 }));
@@ -641,6 +724,7 @@
         });
       }
 
+
       const unique = [];
       centers
         .map((rgb) => rgbToHex(rgb))
@@ -648,9 +732,11 @@
           if (!unique.includes(hex)) unique.push(hex);
         });
 
+
       while (unique.length < 8) {
         unique.push(seededRandomColor(unique.length + 1));
       }
+
 
       return unique
         .slice(0, 8)
@@ -661,6 +747,7 @@
         });
     }
 
+
     function loadFileImage(file) {
       return new Promise((resolve, reject) => {
         const image = new Image();
@@ -669,6 +756,7 @@
         image.src = URL.createObjectURL(file);
       });
     }
+
 
     function loadUrlImage(url) {
       return new Promise((resolve, reject) => {
@@ -681,9 +769,11 @@
       });
     }
 
+
     function proxiedImageUrl(url) {
       return "https://images.weserv.nl/?url=" + encodeURIComponent(url.replace(/^https?:\/\//i, ""));
     }
+
 
     async function extractFromImageUrl(url) {
       const directImage = await loadUrlImage(url);
@@ -696,16 +786,19 @@
       }
     }
 
+
     function showPreviewImage(image) {
       preview.innerHTML = "";
       preview.append(image);
     }
+
 
     document.getElementById("randomize").addEventListener("click", () => {
       colors = Array.from({ length: 8 }, (_, index) => seededRandomColor(index + 1));
       render();
       setStatus("Generated a new editable palette.");
     });
+
 
     document.getElementById("copy").addEventListener("click", async () => {
       try {
@@ -715,6 +808,7 @@
         setStatus("Clipboard access was blocked by the browser.");
       }
     });
+
 
     document.getElementById("export").addEventListener("click", () => {
       const blob = new Blob([paletteText()], { type: "text/plain;charset=utf-8" });
@@ -729,12 +823,14 @@
       setStatus("Exported palette.hex.");
     });
 
+
     document.getElementById("clearImage").addEventListener("click", () => {
       imageInput.value = "";
       imageUrl.value = "";
       preview.innerHTML = "<span>Upload an image to fill the eight swatches.</span>";
       setStatus("");
     });
+
 
     imageInput.addEventListener("change", async () => {
       const file = imageInput.files && imageInput.files[0];
@@ -751,12 +847,14 @@
       }
     });
 
+
     async function useImageUrl() {
       const url = imageUrl.value.trim();
       if (!url) {
         setStatus("Paste an image link first.");
         return;
       }
+
 
       let parsed;
       try {
@@ -766,10 +864,12 @@
         return;
       }
 
+
       if (!/^https?:$/.test(parsed.protocol)) {
         setStatus("Use an http:// or https:// image link.");
         return;
       }
+
 
       setStatus("Loading image link...");
       try {
@@ -784,7 +884,9 @@
       }
     }
 
+
     document.getElementById("loadUrl").addEventListener("click", useImageUrl);
+
 
     imageUrl.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -792,6 +894,7 @@
         useImageUrl();
       }
     });
+
 
     render();
   </script>
